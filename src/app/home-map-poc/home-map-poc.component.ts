@@ -4,6 +4,7 @@ import { AddressLookupError, AddressLookupErrorCode, GoogleMapsLoaderService } f
 import { MOCK_HOME_INSIGHTS } from './mock-home-insights';
 import { PropertyLocation } from './property-location.model';
 import { PropertyMapComponent } from './property-map.component';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home-map-poc',
@@ -22,6 +23,7 @@ export class HomeMapPocComponent {
   protected readonly confirmed = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly mockInsights = MOCK_HOME_INSIGHTS;
+  protected readonly streetViewEnabled = environment.features.streetView;
 
   protected async findHome(): Promise<void> {
     const address = this.address.trim();
@@ -62,6 +64,10 @@ export class HomeMapPocComponent {
     this.track('home_map_shown');
   }
 
+  protected onStreetViewShown(): void {
+    this.track('home_street_view_shown');
+  }
+
   private messageForError(code: AddressLookupErrorCode): string {
     return {
       MISSING_KEY: 'מפתח Google Maps עדיין לא הוגדר. אפשר למצוא הוראות בקובץ README.',
@@ -72,7 +78,7 @@ export class HomeMapPocComponent {
     }[code];
   }
 
-  private track(eventName: 'home_map_shown' | 'home_map_address_confirmed' | 'home_map_address_rejected'): void {
+  private track(eventName: 'home_map_shown' | 'home_map_address_confirmed' | 'home_map_address_rejected' | 'home_street_view_shown'): void {
     // TODO(analytics): Replace with the application's analytics adapter.
     console.info(`[home-map-poc] ${eventName}`);
   }

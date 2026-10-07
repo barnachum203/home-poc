@@ -1,16 +1,43 @@
 <section class="property-map" aria-label="מפת לוויין של הנכס">
   <div class="map-stage">
-    <google-map
-      width="100%"
-      height="100%"
-      [center]="{ lat: location().lat, lng: location().lng }"
-      [zoom]="zoom()"
-      [options]="mapOptions"
-      (mapInitialized)="onMapInitialized($event)"
-    >
-      <map-marker [position]="{ lat: location().lat, lng: location().lng }" [options]="markerOptions" />
-    </google-map>
-    <div class="map-label"><span class="map-label__dot"></span>תצוגת לוויין</div>
+    <div class="map-layer" [class.map-layer--hidden]="viewMode() !== 'satellite'">
+      <google-map
+        width="100%"
+        height="100%"
+        [center]="{ lat: location().lat, lng: location().lng }"
+        [zoom]="zoom()"
+        [options]="mapOptions"
+        (mapInitialized)="onMapInitialized($event)"
+      >
+        <map-marker [position]="{ lat: location().lat, lng: location().lng }" [options]="markerOptions" />
+      </google-map>
+    </div>
+
+    @if (streetViewEnabled() && streetViewStatus() === 'available') {
+      <div #streetViewContainer class="map-layer street-view" [class.map-layer--hidden]="viewMode() !== 'street'"
+        aria-label="מבט מהרחוב ליד הכתובת"></div>
+    }
+
+    @if (streetViewEnabled()) {
+      <div class="view-switch" aria-label="בחירת תצוגת מפה">
+        <button type="button" [class.view-switch__button--active]="viewMode() === 'satellite'"
+          [attr.aria-pressed]="viewMode() === 'satellite'" (click)="showSatellite()">לוויין</button>
+        <button type="button" [class.view-switch__button--active]="viewMode() === 'street'"
+          [attr.aria-pressed]="viewMode() === 'street'" [disabled]="streetViewStatus() !== 'available'"
+          (click)="showStreetView()">
+          @switch (streetViewStatus()) {
+            @case ('checking') { בודקים מבט רחוב… }
+            @case ('unavailable') { אין צילום רחוב }
+            @default { מבט מהרחוב }
+          }
+        </button>
+      </div>
+    }
+
+    <div class="map-label">
+      <span class="map-label__dot"></span>
+      {{ viewMode() === 'street' ? 'צילום הרחוב הקרוב לכתובת' : 'תצוגת לוויין' }}
+    </div>
   </div>
 
   @if (showConfirmation()) {

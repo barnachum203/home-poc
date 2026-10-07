@@ -53,8 +53,9 @@
         <div><p class="flow-status">אימות הנכס</p><h1 id="map-result-title">האם זה הבית שלך?</h1></div>
         <p>אפשר לזהות את הנכס בתצלום הלוויין ולאשר את הכתובת.</p>
       </div>
-      <app-property-map [location]="foundLocation" [confirmed]="confirmed()"
-        (addressConfirmed)="confirmAddress()" (addressRejected)="rejectAddress()" (mapSettled)="onMapSettled()" />
+      <app-property-map [location]="foundLocation" [confirmed]="confirmed()" [streetViewEnabled]="streetViewEnabled"
+        (addressConfirmed)="confirmAddress()" (addressRejected)="rejectAddress()" (mapSettled)="onMapSettled()"
+        (streetViewShown)="onStreetViewShown()" />
     </section>
   }
 
