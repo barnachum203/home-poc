@@ -1,6 +1,17 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AddressLookupError, AddressLookupErrorCode, GoogleMapsLoaderService } from './google-maps-loader.service';
+import {
+  AddressLookupError,
+  AddressLookupErrorCode,
+  GoogleMapsLoaderService,
+} from './google-maps-loader.service';
 import { MOCK_HOME_INSIGHTS } from './mock-home-insights';
 import { PropertyLocation } from './property-location.model';
 import { PropertyMapComponent } from './property-map.component';
@@ -24,6 +35,7 @@ export class HomeMapPocComponent {
   protected readonly errorMessage = signal('');
   protected readonly mockInsights = MOCK_HOME_INSIGHTS;
   protected readonly streetViewEnabled = environment.features.streetView;
+  protected readonly propertyMapSelectionEnabled = environment.features.propertyMapSelection;
 
   protected async findHome(): Promise<void> {
     const address = this.address.trim();
@@ -49,7 +61,9 @@ export class HomeMapPocComponent {
   protected confirmAddress(): void {
     this.confirmed.set(true);
     this.track('home_map_address_confirmed');
-    window.setTimeout(() => document.querySelector('.insights')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
+    window.setTimeout(() =>
+      document.querySelector('.insights')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }),
+    );
   }
 
   protected rejectAddress(): void {
@@ -68,6 +82,17 @@ export class HomeMapPocComponent {
     this.track('home_street_view_shown');
   }
 
+  protected onPropertySelectionStarted(): void {
+    this.track('home_map_property_selection_started');
+  }
+
+  protected onLocationSelected(location: PropertyLocation): void {
+    this.location.set(location);
+    this.address = location.address;
+    this.confirmed.set(false);
+    this.track('home_map_property_selected');
+  }
+
   private messageForError(code: AddressLookupErrorCode): string {
     return {
       MISSING_KEY: 'מפתח Google Maps עדיין לא הוגדר. אפשר למצוא הוראות בקובץ README.',
@@ -78,7 +103,15 @@ export class HomeMapPocComponent {
     }[code];
   }
 
-  private track(eventName: 'home_map_shown' | 'home_map_address_confirmed' | 'home_map_address_rejected' | 'home_street_view_shown'): void {
+  private track(
+    eventName:
+      | 'home_map_shown'
+      | 'home_map_address_confirmed'
+      | 'home_map_address_rejected'
+      | 'home_street_view_shown'
+      | 'home_map_property_selection_started'
+      | 'home_map_property_selected',
+  ): void {
     // TODO(analytics): Replace with the application's analytics adapter.
     console.info(`[home-map-poc] ${eventName}`);
   }

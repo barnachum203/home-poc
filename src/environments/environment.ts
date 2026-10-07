@@ -3,5 +3,6 @@ export const environment = {
   googleMapsApiKey: 'AIzaSyDDR8SGuxCqf8D_bqKJ2bbTKRYYBakAAJI',
   features: {
     streetView: true,
+    propertyMapSelection: true,
   },
 };

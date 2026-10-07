@@ -8,27 +8,52 @@
         [zoom]="zoom()"
         [options]="mapOptions"
         (mapInitialized)="onMapInitialized($event)"
+        (mapClick)="onMapClick($event)"
       >
-        <map-marker [position]="{ lat: location().lat, lng: location().lng }" [options]="markerOptions" />
+        <map-marker
+          [position]="markerPosition()"
+          [options]="markerOptions()"
+          (mapDragend)="onMarkerDragEnd($event)"
+        />
       </google-map>
     </div>
 
     @if (streetViewEnabled() && streetViewStatus() === 'available') {
-      <div #streetViewContainer class="map-layer street-view" [class.map-layer--hidden]="viewMode() !== 'street'"
-        aria-label="מבט מהרחוב ליד הכתובת"></div>
+      <div
+        #streetViewContainer
+        class="map-layer street-view"
+        [class.map-layer--hidden]="viewMode() !== 'street'"
+        aria-label="מבט מהרחוב ליד הכתובת"
+      ></div>
     }
 
-    @if (streetViewEnabled()) {
+    @if (streetViewEnabled() && !selectionMode()) {
       <div class="view-switch" aria-label="בחירת תצוגת מפה">
-        <button type="button" [class.view-switch__button--active]="viewMode() === 'satellite'"
-          [attr.aria-pressed]="viewMode() === 'satellite'" (click)="showSatellite()">לוויין</button>
-        <button type="button" [class.view-switch__button--active]="viewMode() === 'street'"
-          [attr.aria-pressed]="viewMode() === 'street'" [disabled]="streetViewStatus() !== 'available'"
-          (click)="showStreetView()">
+        <button
+          type="button"
+          [class.view-switch__button--active]="viewMode() === 'satellite'"
+          [attr.aria-pressed]="viewMode() === 'satellite'"
+          (click)="showSatellite()"
+        >
+          לוויין
+        </button>
+        <button
+          type="button"
+          [class.view-switch__button--active]="viewMode() === 'street'"
+          [attr.aria-pressed]="viewMode() === 'street'"
+          [disabled]="streetViewStatus() !== 'available'"
+          (click)="showStreetView()"
+        >
           @switch (streetViewStatus()) {
-            @case ('checking') { בודקים מבט רחוב… }
-            @case ('unavailable') { אין צילום רחוב }
-            @default { מבט מהרחוב }
+            @case ('checking') {
+              בודקים מבט רחוב…
+            }
+            @case ('unavailable') {
+              אין צילום רחוב
+            }
+            @default {
+              מבט מהרחוב
+            }
           }
         </button>
       </div>
@@ -36,27 +61,91 @@
 
     <div class="map-label">
       <span class="map-label__dot"></span>
-      {{ viewMode() === 'street' ? 'צילום הרחוב הקרוב לכתובת' : 'תצוגת לוויין' }}
+      {{
+        selectionMode()
+          ? 'מצב בחירת הבית'
+          : viewMode() === 'street'
+            ? 'צילום הרחוב הקרוב לכתובת'
+            : 'תצוגת לוויין'
+      }}
     </div>
   </div>
 
   @if (showConfirmation()) {
     <aside class="confirmation" aria-live="polite">
-      @if (!confirmed()) {
+      @if (selectionMode()) {
+        <div class="confirmation__icon confirmation__icon--selection" aria-hidden="true">⌖</div>
+        <p class="confirmation__kicker">דיוק מיקום הנכס</p>
+
+        @if (selectionLoading()) {
+          <h2>בודקים את הנקודה שבחרת</h2>
+          <p class="confirmation__copy">מחפשים את הכתובת הקרובה ביותר…</p>
+          <div class="selection-loader" aria-hidden="true"><span></span></div>
+        } @else if (suggestedLocation(); as suggestion) {
+          <h2>הכתובת הקרובה לנקודה</h2>
+          <p class="confirmation__address">{{ suggestion.address }}</p>
+          <p class="confirmation__copy">כדאי לוודא שהסיכה נמצאת על הבית הנכון לפני שממשיכים.</p>
+          <div class="confirmation__actions">
+            <button
+              class="button button--primary"
+              type="button"
+              (click)="acceptSuggestedLocation()"
+            >
+              שימוש בכתובת הזו
+            </button>
+            <button class="button button--secondary" type="button" (click)="chooseAnotherPoint()">
+              בחירת נקודה אחרת
+            </button>
+          </div>
+        } @else {
+          <h2>בחרו את הבית על המפה</h2>
+          <p class="confirmation__copy">
+            לחצו על גג הבית, או גררו אליו את הסיכה, ונציע את הכתובת הקרובה ביותר.
+          </p>
+          @if (selectionError()) {
+            <p class="selection-error" role="alert">
+              <span aria-hidden="true">!</span>{{ selectionError() }}
+            </p>
+          }
+        }
+
+        <button class="text-button" type="button" (click)="cancelPropertySelection()">
+          חזרה למיקום המקורי
+        </button>
+      } @else if (!confirmed()) {
         <div class="confirmation__icon" aria-hidden="true">⌂</div>
         <p class="confirmation__kicker">הנכס אותר בהצלחה</p>
         <h2>מצאנו את הבית שלך</h2>
         <p class="confirmation__address">{{ location().address }}</p>
         <p class="confirmation__copy">זה הבית שאנחנו הולכים לעזור לך לשמור עליו.</p>
         <div class="confirmation__actions">
-          <button class="button button--primary" type="button" (click)="addressConfirmed.emit()">כן, זה הבית שלי</button>
-          <button class="button button--secondary" type="button" (click)="addressRejected.emit()">זו לא הכתובת</button>
+          <button class="button button--primary" type="button" (click)="addressConfirmed.emit()">
+            כן, זה הבית שלי
+          </button>
+          @if (propertySelectionEnabled()) {
+            <button
+              class="button button--secondary"
+              type="button"
+              (click)="beginPropertySelection()"
+            >
+              סימון הבית על המפה
+            </button>
+          }
+          <button
+            class="text-button confirmation__reject"
+            type="button"
+            (click)="addressRejected.emit()"
+          >
+            זו לא הכתובת
+          </button>
         </div>
       } @else {
         <div class="confirmation__success" aria-hidden="true">✓</div>
         <h2>הכתובת אושרה</h2>
         <p class="confirmation__address">{{ location().address }}</p>
-        <button class="text-button" type="button" (click)="addressRejected.emit()">בחירת כתובת אחרת</button>
+        <button class="text-button" type="button" (click)="addressRejected.emit()">
+          בחירת כתובת אחרת
+        </button>
       }
     </aside>
   }

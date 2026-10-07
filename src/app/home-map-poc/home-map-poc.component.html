@@ -1,7 +1,10 @@
 <main class="page-shell">
   <header class="brand" aria-label="מגן בית">
     <span class="brand__mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32"><path d="M16 2.8 27 7v8.2c0 7.1-4.5 11.8-11 14-6.5-2.2-11-6.9-11-14V7l11-4.2Z" /><path d="m10 16 6-5 6 5v6h-4v-4h-4v4h-4v-6Z" /></svg>
+      <svg viewBox="0 0 32 32">
+        <path d="M16 2.8 27 7v8.2c0 7.1-4.5 11.8-11 14-6.5-2.2-11-6.9-11-14V7l11-4.2Z" />
+        <path d="m10 16 6-5 6 5v6h-4v-4h-4v4h-4v-6Z" />
+      </svg>
     </span>
     <span>מגן בית</span>
   </header>
@@ -18,21 +21,38 @@
         <label for="home-address">כתובת הבית</label>
         <div class="address-form__row">
           <div class="input-wrap" [class.input-wrap--error]="errorMessage()">
-            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.4 7-12A7 7 0 1 0 5 9c0 6.6 7 12 7 12Z" /><circle cx="12" cy="9" r="2.5" /></svg>
-            <input #addressInput id="home-address" name="address" type="search" dir="rtl" autocomplete="street-address"
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M12 21s7-5.4 7-12A7 7 0 1 0 5 9c0 6.6 7 12 7 12Z" />
+              <circle cx="12" cy="9" r="2.5" />
+            </svg>
+            <input
+              #addressInput
+              id="home-address"
+              name="address"
+              type="search"
+              dir="rtl"
+              autocomplete="street-address"
               placeholder="למשל, הרצל 15, חיפה"
-              [attr.aria-describedby]="errorMessage() ? 'address-error address-help' : 'address-help'"
-              [attr.aria-invalid]="errorMessage() ? 'true' : 'false'" [(ngModel)]="address" />
+              [attr.aria-describedby]="
+                errorMessage() ? 'address-error address-help' : 'address-help'
+              "
+              [attr.aria-invalid]="errorMessage() ? 'true' : 'false'"
+              [(ngModel)]="address"
+            />
           </div>
           <button class="find-button" type="submit">מצאו את הבית שלי</button>
         </div>
         <p id="address-help" class="form-help">יש להזין רחוב, מספר בית ועיר</p>
         @if (errorMessage()) {
-          <p id="address-error" class="form-error" role="alert"><span aria-hidden="true">!</span>{{ errorMessage() }}</p>
+          <p id="address-error" class="form-error" role="alert">
+            <span aria-hidden="true">!</span>{{ errorMessage() }}
+          </p>
         }
       </form>
       <div class="trust-note">
-        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 10V8a5 5 0 0 1 10 0v2M6 10h12v10H6V10Z" /></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M7 10V8a5 5 0 0 1 10 0v2M6 10h12v10H6V10Z" />
+        </svg>
         הכתובת משמשת לאיתור הנכס בלבד בשלב זה
       </div>
     </section>
@@ -50,27 +70,50 @@
   @if (location(); as foundLocation) {
     <section class="map-result" aria-labelledby="map-result-title">
       <div class="map-result__heading">
-        <div><p class="flow-status">אימות הנכס</p><h1 id="map-result-title">האם זה הבית שלך?</h1></div>
+        <div>
+          <p class="flow-status">אימות הנכס</p>
+          <h1 id="map-result-title">האם זה הבית שלך?</h1>
+        </div>
         <p>אפשר לזהות את הנכס בתצלום הלוויין ולאשר את הכתובת.</p>
       </div>
-      <app-property-map [location]="foundLocation" [confirmed]="confirmed()" [streetViewEnabled]="streetViewEnabled"
-        (addressConfirmed)="confirmAddress()" (addressRejected)="rejectAddress()" (mapSettled)="onMapSettled()"
-        (streetViewShown)="onStreetViewShown()" />
+      <app-property-map
+        [location]="foundLocation"
+        [confirmed]="confirmed()"
+        [streetViewEnabled]="streetViewEnabled"
+        [propertySelectionEnabled]="propertyMapSelectionEnabled"
+        (addressConfirmed)="confirmAddress()"
+        (addressRejected)="rejectAddress()"
+        (mapSettled)="onMapSettled()"
+        (streetViewShown)="onStreetViewShown()"
+        (propertySelectionStarted)="onPropertySelectionStarted()"
+        (locationSelected)="onLocationSelected($event)"
+      />
     </section>
   }
 
   @if (confirmed()) {
     <section class="insights" aria-labelledby="insights-title">
       <div class="insights__heading">
-        <div><p class="flow-status">תצוגה מקדימה</p><h2 id="insights-title">כמה דברים על סביבת הבית</h2></div>
+        <div>
+          <p class="flow-status">תצוגה מקדימה</p>
+          <h2 id="insights-title">כמה דברים על סביבת הבית</h2>
+        </div>
         <span class="mock-badge">נתוני הדגמה</span>
       </div>
       <div class="insights__list">
         @for (insight of mockInsights; track insight.title) {
-          <article class="insight"><span class="insight__icon" aria-hidden="true">{{ insight.icon }}</span><div><h3>{{ insight.title }}</h3><p>{{ insight.value }}</p></div></article>
+          <article class="insight">
+            <span class="insight__icon" aria-hidden="true">{{ insight.icon }}</span>
+            <div>
+              <h3>{{ insight.title }}</h3>
+              <p>{{ insight.value }}</p>
+            </div>
+          </article>
         }
       </div>
-      <p class="insights__disclaimer">הנתונים באזור זה הם נתוני המחשה בלבד ואינם מתקבלים מ־Google Maps.</p>
+      <p class="insights__disclaimer">
+        הנתונים באזור זה הם נתוני המחשה בלבד ואינם מתקבלים מ־Google Maps.
+      </p>
     </section>
   }
 </main>

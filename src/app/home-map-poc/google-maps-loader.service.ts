@@ -4,11 +4,7 @@ import { environment } from '../../environments/environment';
 import { PropertyLocation } from './property-location.model';
 
 export type AddressLookupErrorCode =
-  | 'MISSING_KEY'
-  | 'LOAD_FAILED'
-  | 'NOT_FOUND'
-  | 'NO_COORDINATES'
-  | 'GEOCODING_ERROR';
+  'MISSING_KEY' | 'LOAD_FAILED' | 'NOT_FOUND' | 'NO_COORDINATES' | 'GEOCODING_ERROR';
 
 export class AddressLookupError extends Error {
   constructor(readonly code: AddressLookupErrorCode) {
@@ -34,6 +30,36 @@ export class GoogleMapsLoaderService {
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
         throw new AddressLookupError('NO_COORDINATES');
       }
+
+      return {
+        address: result.formatted_address,
+        lat,
+        lng,
+        placeId: result.place_id,
+      };
+    } catch (error) {
+      if (error instanceof AddressLookupError) throw error;
+      if ((error as { code?: string })?.code === 'ZERO_RESULTS') {
+        throw new AddressLookupError('NOT_FOUND');
+      }
+      throw new AddressLookupError('GEOCODING_ERROR');
+    }
+  }
+
+  async reverseGeocodeLocation(lat: number, lng: number): Promise<PropertyLocation> {
+    await this.load();
+
+    try {
+      const response = await new google.maps.Geocoder().geocode({
+        location: { lat, lng },
+        region: 'IL',
+      });
+      const result =
+        response.results.find((candidate) => candidate.types.includes('street_address')) ??
+        response.results.find((candidate) => candidate.types.includes('premise')) ??
+        response.results[0];
+
+      if (!result) throw new AddressLookupError('NOT_FOUND');
 
       return {
         address: result.formatted_address,
@@ -82,13 +108,15 @@ export class GoogleMapsLoaderService {
         this.loadPromise = undefined;
         reject(new AddressLookupError('LOAD_FAILED'));
       };
-      script.src = 'https://maps.googleapis.com/maps/api/js?' + new URLSearchParams({
-        key: environment.googleMapsApiKey,
-        callback: callbackName,
-        language: 'he',
-        region: 'IL',
-        v: 'weekly',
-      });
+      script.src =
+        'https://maps.googleapis.com/maps/api/js?' +
+        new URLSearchParams({
+          key: environment.googleMapsApiKey,
+          callback: callbackName,
+          language: 'he',
+          region: 'IL',
+          v: 'weekly',
+        });
       this.document.head.appendChild(script);
     });
     return this.loadPromise;
