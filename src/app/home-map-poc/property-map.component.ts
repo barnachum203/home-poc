@@ -208,7 +208,7 @@ export class PropertyMapComponent implements OnDestroy {
       center: { lat: location.lat, lng: location.lng },
       radius: reduceMotion ? 10 : 4,
       clickable: false,
-      fillColor: 'goldenrod',
+      fillColor: '#4c84ff',
       fillOpacity: reduceMotion ? 0.18 : 0.24,
       strokeColor: 'white',
       strokeOpacity: 0.95,

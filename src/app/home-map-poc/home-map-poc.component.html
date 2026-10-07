@@ -1,20 +1,37 @@
 <main class="page-shell">
-  <header class="brand" aria-label="מגן בית">
-    <span class="brand__mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32">
-        <path d="M16 2.8 27 7v8.2c0 7.1-4.5 11.8-11 14-6.5-2.2-11-6.9-11-14V7l11-4.2Z" />
-        <path d="m10 16 6-5 6 5v6h-4v-4h-4v4h-4v-6Z" />
+  <header class="brand" aria-label="AIG ביטוח דירה">
+    <div class="brand__identity">
+      <img src="aig-logo.svg" width="105" height="52" alt="AIG" />
+      <span class="brand__divider" aria-hidden="true"></span>
+      <div class="brand__product">
+        <strong>ביטוח דירה</strong>
+        <span>הצעה דיגיטלית</span>
+      </div>
+    </div>
+    <div class="brand__secure">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M7 10V8a5 5 0 0 1 10 0v2M6 10h12v10H6V10Z" />
       </svg>
-    </span>
-    <span>מגן בית</span>
+      תהליך מאובטח
+    </div>
   </header>
 
   @if (!location() && !isLoading()) {
     <section class="address-step" aria-labelledby="page-title">
-      <div class="address-step__number" aria-hidden="true">1</div>
+      <div
+        class="flow-progress"
+        role="progressbar"
+        aria-label="התקדמות בתהליך"
+        aria-valuemin="1"
+        aria-valuemax="4"
+        aria-valuenow="1"
+      >
+        <div><strong>פרטי הנכס</strong><span>שלב 1 מתוך 4</span></div>
+        <span class="flow-progress__track" aria-hidden="true"><span></span></span>
+      </div>
       <div class="address-step__intro">
-        <p class="flow-status">פרטי הנכס</p>
-        <h1 id="page-title">מגנים על הבית שלך</h1>
+        <p class="flow-status">ביטוח דירה בהתאמה אישית</p>
+        <h1 id="page-title">מגנים על הבית שלך טוב יותר</h1>
         <p>נתחיל בכתובת. נמצא את הנכס על המפה כדי לוודא שהגענו למקום הנכון.</p>
       </div>
       <form class="address-form" (ngSubmit)="findHome()" novalidate>

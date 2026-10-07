@@ -2,6 +2,8 @@
 
 A focused Angular POC for visually confirming a home-insurance address on a Google satellite map. The experience is Hebrew-first and RTL, responsive, keyboard accessible, and supports reduced motion.
 
+The UI uses the public AIG Israel visual identity. `public/aig-logo.svg` is a local copy of the header logo published on [aig.co.il](https://www.aig.co.il/media/o45fy4lk/header_logo_aig.svg), included only for this POC.
+
 ## Run locally
 
 Requirements: Node.js 22 and npm.

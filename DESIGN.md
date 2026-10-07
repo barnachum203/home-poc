@@ -2,17 +2,17 @@
 
 ## Theme
 
-Bright residential daylight with an established insurer's calm authority. A pure white canvas keeps the task clear; a measured honey-gold primary adds warmth while deep petrol blue supplies trust and legibility. The color strategy is restrained.
+A focused AIG Israel product surface based on the public digital identity: deep AIG navy, vivid action blue, white task surfaces, and cool blue-gray backgrounds. Orange appears only as a small supporting highlight. The color strategy is restrained and transactional.
 
 ## Colors
 
-- `--color-bg: oklch(1 0 0)`
-- `--color-surface: oklch(0.975 0.006 91.3)`
-- `--color-ink: oklch(0.22 0.025 245)`
-- `--color-muted: oklch(0.46 0.025 245)`
-- `--color-primary: oklch(0.7 0.155 91.3)`
-- `--color-primary-strong: oklch(0.53 0.135 91.3)`
-- `--color-accent: oklch(0.31 0.09 230)`
+- `--color-bg: oklch(0.972 0.008 253.9)`
+- `--color-surface: oklch(1 0 0)`
+- `--color-ink: oklch(0.199 0.1 263)`
+- `--color-muted: oklch(0.43 0.055 260)`
+- `--color-primary: oklch(0.499 0.222 262.9)`
+- `--color-primary-strong: oklch(0.277 0.153 263.7)`
+- `--color-accent: oklch(0.499 0.222 262.9)`
 - `--color-success: oklch(0.46 0.11 155)`
 - `--color-error: oklch(0.49 0.17 28)`
 

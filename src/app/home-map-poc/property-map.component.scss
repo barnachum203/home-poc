@@ -7,8 +7,8 @@
   min-height: 620px;
   overflow: hidden;
   background: var(--color-surface-strong);
-  border-radius: 16px;
-  box-shadow: 0 4px 8px oklch(0.22 0.025 245 / 0.18);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px oklch(0.199 0.1 263 / 0.16);
 }
 .map-stage {
   position: absolute;
@@ -45,8 +45,8 @@ google-map {
   display: flex;
   padding: 4px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 3px 7px oklch(0.12 0.02 245 / 0.24);
+  border-radius: 8px;
+  box-shadow: 0 3px 7px oklch(0.199 0.1 263 / 0.22);
 
   button {
     min-height: 38px;
@@ -54,7 +54,7 @@ google-map {
     color: var(--color-accent);
     background: transparent;
     border: 0;
-    border-radius: 9px;
+    border-radius: 6px;
     font-size: 0.8125rem;
     font-weight: 800;
     transition:
@@ -84,7 +84,7 @@ google-map {
   gap: 8px;
   padding: 8px 12px;
   color: white;
-  background: oklch(0.16 0.02 245 / 0.82);
+  background: oklch(0.199 0.1 263 / 0.9);
   border-radius: 999px;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -104,8 +104,8 @@ google-map {
   padding: 28px;
   color: var(--color-ink);
   background: oklch(1 0 0 / 0.97);
-  border-radius: 16px;
-  box-shadow: 0 4px 8px oklch(0.12 0.02 245 / 0.25);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px oklch(0.199 0.1 263 / 0.24);
   animation: card-in 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .confirmation__icon,
@@ -117,7 +117,7 @@ google-map {
   place-items: center;
   color: white;
   background: var(--color-accent);
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 1.7rem;
   font-weight: 800;
   line-height: 1;
@@ -131,7 +131,7 @@ google-map {
 }
 .confirmation__kicker {
   margin: 0 0 6px;
-  color: var(--color-primary-strong);
+  color: var(--color-primary);
   font-size: 0.875rem;
   font-weight: 700;
 }
@@ -161,7 +161,7 @@ h2 {
   min-height: 48px;
   padding: 0 20px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 700;
   transition:
     background-color 180ms ease-out,
@@ -263,8 +263,8 @@ h2 {
     position: relative;
     height: 410px;
     overflow: hidden;
-    border-radius: 14px;
-    box-shadow: 0 3px 7px oklch(0.22 0.025 245 / 0.18);
+    border-radius: 10px;
+    box-shadow: 0 3px 7px oklch(0.199 0.1 263 / 0.16);
   }
   .confirmation {
     position: relative;
