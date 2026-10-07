@@ -25,18 +25,6 @@ google-map { display: block; height: 100%; }
   font-weight: 700;
 }
 .map-label__dot { width: 7px; height: 7px; background: var(--color-primary); border-radius: 50%; }
-.property-pulse {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 58px;
-  height: 58px;
-  border: 3px solid white;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 7px oklch(0.7 0.155 91.3 / 0.48);
-  animation: property-pulse 1.8s ease-out infinite;
-  pointer-events: none;
-}
 .confirmation {
   position: absolute;
   z-index: 2;
@@ -91,10 +79,6 @@ h2 { margin: 0; font-size: 1.625rem; line-height: 1.25; text-wrap: balance; }
   text-underline-offset: 4px;
 }
 @keyframes card-in { from { opacity: 0; transform: translateY(16px); } }
-@keyframes property-pulse {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.65); }
-  75%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
-}
 @media (max-width: 720px) {
   .property-map { min-height: 0; overflow: visible; background: transparent; border-radius: 0; box-shadow: none; }
   .map-stage {
