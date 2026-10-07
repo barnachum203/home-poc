@@ -1,0 +1,37 @@
+<section class="property-map" aria-label="מפת לוויין של הנכס">
+  <div class="map-stage">
+    <google-map
+      width="100%"
+      height="100%"
+      [center]="{ lat: location().lat, lng: location().lng }"
+      [zoom]="zoom()"
+      [options]="mapOptions"
+      (mapInitialized)="onMapInitialized($event)"
+    >
+      <map-marker [position]="{ lat: location().lat, lng: location().lng }" [options]="markerOptions" />
+    </google-map>
+    @if (showConfirmation()) { <span class="property-pulse" aria-hidden="true"></span> }
+    <div class="map-label"><span class="map-label__dot"></span>תצוגת לוויין</div>
+  </div>
+
+  @if (showConfirmation()) {
+    <aside class="confirmation" aria-live="polite">
+      @if (!confirmed()) {
+        <div class="confirmation__icon" aria-hidden="true">⌂</div>
+        <p class="confirmation__kicker">הנכס אותר בהצלחה</p>
+        <h2>מצאנו את הבית שלך</h2>
+        <p class="confirmation__address">{{ location().address }}</p>
+        <p class="confirmation__copy">זה הבית שאנחנו הולכים לעזור לך לשמור עליו.</p>
+        <div class="confirmation__actions">
+          <button class="button button--primary" type="button" (click)="addressConfirmed.emit()">כן, זה הבית שלי</button>
+          <button class="button button--secondary" type="button" (click)="addressRejected.emit()">זו לא הכתובת</button>
+        </div>
+      } @else {
+        <div class="confirmation__success" aria-hidden="true">✓</div>
+        <h2>הכתובת אושרה</h2>
+        <p class="confirmation__address">{{ location().address }}</p>
+        <button class="text-button" type="button" (click)="addressRejected.emit()">בחירת כתובת אחרת</button>
+      }
+    </aside>
+  }
+</section>
