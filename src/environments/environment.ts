@@ -1,6 +1,8 @@
+import { generatedGoogleMapsApiKey } from './environment.generated';
+
 export const environment = {
   production: false,
-  googleMapsApiKey: 'AIzaSyDDR8SGuxCqf8D_bqKJ2bbTKRYYBakAAJI',
+  googleMapsApiKey: generatedGoogleMapsApiKey,
   features: {
     streetView: true,
     propertyMapSelection: true,
