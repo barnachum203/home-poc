@@ -79,7 +79,7 @@ No redirect file, Worker, or Pages Function is required. The build produces a to
 - The feature route is lazy-loaded, and a map component is only rendered after a valid geocoding result.
 - Google Maps remains the default. The selector swaps only the renderer; both map components receive the same resolved `PropertyLocation`, so switching does not repeat geocoding or reset the selected address.
 - Leaflet uses the standard OpenStreetMap tile service at `https://tile.openstreetmap.org/{z}/{x}/{y}.png` with visible attribution. This public, best-effort service is suitable for light POC use; production traffic should follow the OpenStreetMap tile usage policy or use a provider with an SLA.
-- Leaflet's marker images are copied from the installed package into `leaflet-images` during the Angular production build.
+- Leaflet uses an embedded AIG-styled SVG property marker, so no external marker image paths are required in development or production.
 - The Google Maps JavaScript API script is injected only when the user submits an address. A blank key, load failure, no result, invalid coordinates, and geocoding errors each show a friendly inline message.
 - The map starts at zoom 15 in satellite mode and steps to zoom 19 before showing the marker pulse and confirmation panel.
 - When the feature flag is enabled, the map searches for outdoor Street View imagery within 50 metres. If coverage exists, the customer can switch between satellite and street views; otherwise the satellite view remains available with a disabled coverage label.

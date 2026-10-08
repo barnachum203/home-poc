@@ -12,6 +12,14 @@ import {
 import * as L from 'leaflet';
 import { PropertyLocation } from './property-location.model';
 
+const PROPERTY_MARKER = `data:image/svg+xml,${encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="38" height="48" viewBox="0 0 38 48">
+    <path d="M19 1C9.1 1 1 9.1 1 19c0 12.5 16.5 27.2 17.2 27.8.5.4 1.1.4 1.6 0C20.5 46.2 37 31.5 37 19 37 9.1 28.9 1 19 1Z" fill="#1658e8" stroke="#fff" stroke-width="2"/>
+    <path d="m12.5 19 6.5-5.5 6.5 5.5v8h-13v-8Z" fill="#fff"/>
+    <path d="M17 27v-5h4v5" fill="none" stroke="#1658e8" stroke-width="1.6"/>
+  </svg>
+`)}`;
+
 @Component({
   selector: 'app-property-map-leaflet',
   templateUrl: './property-map-leaflet.component.html',
@@ -31,7 +39,9 @@ export class PropertyMapLeafletComponent implements AfterViewInit, OnDestroy {
   private map?: L.Map;
   private propertyCircle?: L.Circle;
   private pulseAnimationFrame?: number;
+  private cameraTimer?: number;
   private settleTimer?: number;
+  private resizeObserver?: ResizeObserver;
   private settled = false;
 
   ngAfterViewInit(): void {
@@ -39,7 +49,9 @@ export class PropertyMapLeafletComponent implements AfterViewInit, OnDestroy {
     const position = L.latLng(target.lat, target.lng);
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    this.map = L.map(this.mapContainer().nativeElement, {
+    const mapElement = this.mapContainer().nativeElement;
+
+    this.map = L.map(mapElement, {
       attributionControl: true,
       center: position,
       doubleClickZoom: true,
@@ -59,13 +71,10 @@ export class PropertyMapLeafletComponent implements AfterViewInit, OnDestroy {
     L.marker(position, {
       alt: 'הבית שנמצא',
       icon: L.icon({
-        iconUrl: '/leaflet-images/marker-icon.png',
-        iconRetinaUrl: '/leaflet-images/marker-icon-2x.png',
-        shadowUrl: '/leaflet-images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
+        iconUrl: PROPERTY_MARKER,
+        iconSize: [38, 48],
+        iconAnchor: [19, 47],
+        popupAnchor: [0, -42],
       }),
       keyboard: true,
       title: 'הבית שנמצא',
@@ -81,17 +90,26 @@ export class PropertyMapLeafletComponent implements AfterViewInit, OnDestroy {
       weight: 2,
     }).addTo(this.map);
 
-    window.requestAnimationFrame(() => this.map?.invalidateSize());
+    this.resizeObserver = new ResizeObserver(() => {
+      window.requestAnimationFrame(() => this.map?.invalidateSize({ animate: false, pan: false }));
+    });
+    this.resizeObserver.observe(mapElement);
 
     if (reduceMotion) {
-      this.map.setView(position, 19, { animate: false });
-      this.finishCameraMove();
+      window.requestAnimationFrame(() => {
+        this.map?.invalidateSize({ animate: false, pan: false });
+        this.map?.setView(position, 19, { animate: false });
+        this.finishCameraMove();
+      });
       return;
     }
 
-    this.map.once('moveend', () => this.finishCameraMove());
     this.settleTimer = window.setTimeout(() => this.finishCameraMove(), 1800);
-    window.setTimeout(() => this.map?.flyTo(position, 19, { duration: 1.15 }), 180);
+    this.cameraTimer = window.setTimeout(() => {
+      this.map?.invalidateSize({ animate: false, pan: false });
+      this.map?.once('moveend', () => this.finishCameraMove());
+      this.map?.flyTo(position, 19, { duration: 1.15 });
+    }, 180);
     this.animatePropertyCircle();
   }
 
@@ -102,7 +120,13 @@ export class PropertyMapLeafletComponent implements AfterViewInit, OnDestroy {
     if (this.settleTimer !== undefined) {
       window.clearTimeout(this.settleTimer);
     }
-    this.map?.remove();
+    if (this.cameraTimer !== undefined) {
+      window.clearTimeout(this.cameraTimer);
+    }
+    this.resizeObserver?.disconnect();
+    const map = this.map;
+    this.map = undefined;
+    map?.remove();
   }
 
   private finishCameraMove(): void {
