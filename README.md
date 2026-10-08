@@ -1,6 +1,6 @@
 # Home map POC
 
-A focused Angular POC for visually confirming a home-insurance address on a Google satellite map. The experience is Hebrew-first and RTL, responsive, keyboard accessible, and supports reduced motion.
+A focused Angular POC for visually confirming a home-insurance address with either Google Maps or Leaflet. The experience is Hebrew-first and RTL, responsive, keyboard accessible, and supports reduced motion.
 
 The UI uses the public AIG Israel visual identity. `public/aig-logo.svg` is a local copy of the header logo published on [aig.co.il](https://www.aig.co.il/media/o45fy4lk/header_logo_aig.svg), included only for this POC.
 
@@ -76,7 +76,10 @@ No redirect file, Worker, or Pages Function is required. The build produces a to
 
 ## Implementation notes
 
-- The feature route is lazy-loaded, and the `<app-property-map>` component is only rendered after a valid geocoding result.
+- The feature route is lazy-loaded, and a map component is only rendered after a valid geocoding result.
+- Google Maps remains the default. The selector swaps only the renderer; both map components receive the same resolved `PropertyLocation`, so switching does not repeat geocoding or reset the selected address.
+- Leaflet uses the standard OpenStreetMap tile service at `https://tile.openstreetmap.org/{z}/{x}/{y}.png` with visible attribution. This public, best-effort service is suitable for light POC use; production traffic should follow the OpenStreetMap tile usage policy or use a provider with an SLA.
+- Leaflet's marker images are copied from the installed package into `leaflet-images` during the Angular production build.
 - The Google Maps JavaScript API script is injected only when the user submits an address. A blank key, load failure, no result, invalid coordinates, and geocoding errors each show a friendly inline message.
 - The map starts at zoom 15 in satellite mode and steps to zoom 19 before showing the marker pulse and confirmation panel.
 - When the feature flag is enabled, the map searches for outdoor Street View imagery within 50 metres. If coverage exists, the customer can switch between satellite and street views; otherwise the satellite view remains available with a disabled coverage label.
@@ -89,6 +92,8 @@ No redirect file, Worker, or Pages Function is required. The build produces a to
 ## POC limitations
 
 - Address lookup is submit-based geocoding, not Places autocomplete.
+- Both map views currently share the existing Google geocoding step. Leaflet changes the map renderer and tiles, not the address-resolution provider.
+- The Leaflet comparison uses OpenStreetMap street tiles and does not include Google satellite imagery, Street View, or the Google map's click/drag property-correction flow.
 - Street View coverage and image recency vary by address.
 - Reverse geocoding returns the closest addressable location and cannot guarantee that a clicked roof represents an exact postal address or apartment.
 - The API key is embedded into the public browser bundle at build time. It is not a secret after deployment, so API and HTTP-referrer restrictions are mandatory.

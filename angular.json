@@ -45,13 +45,19 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": ["leaflet"],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/leaflet/dist/images",
+                "output": "leaflet-images"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": ["node_modules/leaflet/dist/leaflet.css", "src/styles.scss"]
           },
           "configurations": {
             "production": {

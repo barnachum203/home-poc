@@ -91,20 +91,51 @@
           <p class="flow-status">אימות הנכס</p>
           <h1 id="map-result-title">האם זה הבית שלך?</h1>
         </div>
-        <p>אפשר לזהות את הנכס בתצלום הלוויין ולאשר את הכתובת.</p>
+        <p>אפשר לזהות את הנכס על המפה ולאשר את הכתובת.</p>
       </div>
-      <app-property-map
-        [location]="foundLocation"
-        [confirmed]="confirmed()"
-        [streetViewEnabled]="streetViewEnabled"
-        [propertySelectionEnabled]="propertyMapSelectionEnabled"
-        (addressConfirmed)="confirmAddress()"
-        (addressRejected)="rejectAddress()"
-        (mapSettled)="onMapSettled()"
-        (streetViewShown)="onStreetViewShown()"
-        (propertySelectionStarted)="onPropertySelectionStarted()"
-        (locationSelected)="onLocationSelected($event)"
-      />
+      <div class="map-engine-selector">
+        <span>תצוגת מפה:</span>
+        <div role="group" aria-label="בחירת תצוגת מפה">
+          <button
+            type="button"
+            [class.active]="mapEngine() === 'google'"
+            [attr.aria-pressed]="mapEngine() === 'google'"
+            (click)="selectMapEngine('google')"
+          >
+            Google Maps
+          </button>
+          <button
+            type="button"
+            [class.active]="mapEngine() === 'leaflet'"
+            [attr.aria-pressed]="mapEngine() === 'leaflet'"
+            (click)="selectMapEngine('leaflet')"
+          >
+            Leaflet
+          </button>
+        </div>
+      </div>
+      @if (mapEngine() === 'google') {
+        <app-property-map
+          [location]="foundLocation"
+          [confirmed]="confirmed()"
+          [streetViewEnabled]="streetViewEnabled"
+          [propertySelectionEnabled]="propertyMapSelectionEnabled"
+          (addressConfirmed)="confirmAddress()"
+          (addressRejected)="rejectAddress()"
+          (mapSettled)="onMapSettled()"
+          (streetViewShown)="onStreetViewShown()"
+          (propertySelectionStarted)="onPropertySelectionStarted()"
+          (locationSelected)="onLocationSelected($event)"
+        />
+      } @else {
+        <app-property-map-leaflet
+          [location]="foundLocation"
+          [confirmed]="confirmed()"
+          (addressConfirmed)="confirmAddress()"
+          (addressRejected)="rejectAddress()"
+          (mapSettled)="onMapSettled()"
+        />
+      }
     </section>
   }
 

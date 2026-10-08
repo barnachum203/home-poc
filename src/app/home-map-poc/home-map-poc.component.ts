@@ -14,12 +14,15 @@ import {
 } from './google-maps-loader.service';
 import { MOCK_HOME_INSIGHTS } from './mock-home-insights';
 import { PropertyLocation } from './property-location.model';
+import { PropertyMapLeafletComponent } from './property-map-leaflet.component';
 import { PropertyMapComponent } from './property-map.component';
 import { environment } from '../../environments/environment';
 
+type MapEngine = 'google' | 'leaflet';
+
 @Component({
   selector: 'app-home-map-poc',
-  imports: [FormsModule, PropertyMapComponent],
+  imports: [FormsModule, PropertyMapComponent, PropertyMapLeafletComponent],
   templateUrl: './home-map-poc.component.html',
   styleUrl: './home-map-poc.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +34,7 @@ export class HomeMapPocComponent {
   protected address = '';
   protected readonly isLoading = signal(false);
   protected readonly location = signal<PropertyLocation | null>(null);
+  protected readonly mapEngine = signal<MapEngine>('google');
   protected readonly confirmed = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly mockInsights = MOCK_HOME_INSIGHTS;
@@ -76,6 +80,10 @@ export class HomeMapPocComponent {
 
   protected onMapSettled(): void {
     this.track('home_map_shown');
+  }
+
+  protected selectMapEngine(engine: MapEngine): void {
+    this.mapEngine.set(engine);
   }
 
   protected onStreetViewShown(): void {

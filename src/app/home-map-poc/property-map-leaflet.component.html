@@ -1,0 +1,36 @@
+<section class="property-map" aria-label="מפת Leaflet של הנכס">
+  <div #mapContainer class="map-canvas" aria-label="מפת OpenStreetMap ממוקדת בנכס"></div>
+
+  <div class="map-label" aria-hidden="true">
+    <span class="map-label__dot"></span>
+    Leaflet · OpenStreetMap
+  </div>
+
+  @if (showConfirmation()) {
+    <aside class="confirmation" aria-live="polite">
+      @if (!confirmed()) {
+        <div class="confirmation__icon" aria-hidden="true">⌂</div>
+        <p class="confirmation__kicker">הנכס אותר בהצלחה</p>
+        <h2>מצאנו את הבית שלך</h2>
+        <p class="confirmation__address">{{ location().address }}</p>
+        <p class="confirmation__copy">זה הבית שאנחנו הולכים לעזור לך לשמור עליו.</p>
+
+        <div class="confirmation__actions">
+          <button class="button button--primary" type="button" (click)="addressConfirmed.emit()">
+            כן, זה הבית שלי
+          </button>
+          <button class="button button--secondary" type="button" (click)="addressRejected.emit()">
+            זו לא הכתובת
+          </button>
+        </div>
+      } @else {
+        <div class="confirmation__success" aria-hidden="true">✓</div>
+        <h2>הכתובת אושרה</h2>
+        <p class="confirmation__address">{{ location().address }}</p>
+        <button class="text-button" type="button" (click)="addressRejected.emit()">
+          בחירת כתובת אחרת
+        </button>
+      }
+    </aside>
+  }
+</section>
